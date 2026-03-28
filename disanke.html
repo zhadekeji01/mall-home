@@ -3,105 +3,84 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>小程序商城首页</title>
+  <title>小程序商城首页-带交互</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑",sans-serif;}
+    body{background:#f5f5f5;}
+
+    /*顶部导航*/
+    .nav{
+      position:fixed;top:0;left:0;width:100%;height:50px;
+      background:#ff4a4a;color:#fff;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 15px;z-index:999;
+    }
+    .nav.active{
+      background:#222;
     }
 
-    body {
-      background: #f5f5f5;
+    /*搜索框*/
+    .search{margin-top:60px;padding:0 15px;}
+    .search input{
+      width:100%;height:42px;border-radius:21px;border:none;
+      outline:none;padding:0 18px;font-size:14px;background:#fff;
+      box-shadow:0 2px 5px rgba(0,0,0,0.1);
     }
 
-    /* 顶部导航 */
-    .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 50px;
-      background: #ffb44a;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 15px;
-      z-index: 999;
+    /*轮播*/
+    .banner{
+      margin:12px 15px;height:170px;
+      background:linear-gradient(45deg,#ff6b6b,#ff8a80);
+      border-radius:12px;display:flex;
+      align-items:center;justify-content:center;color:#fff;font-size:16px;
     }
 
-    /* 搜索框 */
-    .search {
-      margin-top: 60px;
-      padding: 0 15px;
+    /*分类菜单*/
+    .menu{
+      background:#fff;margin:0 15px;border-radius:12px;
+      padding:15px 0;display:flex;justify-content:space-around;
     }
-
-    .search input {
-      width: 100%;
-      height: 42px;
-      border-radius: 21px;
-      border: none;
-      outline: none;
-      padding: 0 18px;
-      font-size: 14px;
-      background: white;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    /* 轮播图 */
-    .banner {
-      margin: 12px 15px;
-      height: 170px;
-      background: linear-gradient(45deg, #ea6608fb, #ff8a80);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 16px;
-    }
-
-    /* 图标菜单 */
-    .menu {
-      background: white;
-      margin: 0 15px;
-      border-radius: 12px;
-      padding: 15px 0;
-      display: flex;
-      justify-content: space-around;
-    }
-
-    .item {
-      text-align: center;
-      font-size: 12px;
-      color: #333;
-    }
-
+    .item{text-align:center;font-size:12px;color:#333;}
+    .item.active{color:red;font-weight:bold;}
   </style>
 </head>
 <body>
 
-  <div class="nav">
-    <div>🏠 我的生鲜小程序商城</div>
-    <div>🔔 消息</div>
-  </div>
+<div class="nav" id="topNav" onclick="changeNavColor()">
+  <div>🏠我的生鲜小程序商城</div>
+  <div>🔔消息</div>
+</div>
 
-  <div class="search">
-    <input type="text" placeholder="🔍 搜索生鲜/零食/水果">
-  </div>
+<div class="search">
+  <input type="text" placeholder="🔍搜索生鲜/零食/水果">
+</div>
 
-  <div class="banner">
-    🎁 限时抢购，全场低至5折！再买五送一！
-  </div>
+<div class="banner">年货特惠 全场低至5折</div>
 
-  <div class="menu">
-    <div class="item">🍎 水果</div>
-    <div class="item">🥤 饮料</div>
-    <div class="item">🍞 零食</div>
-    <div class="item">🎁 礼品</div>
-  </div>
+<div class="menu">
+  <div class="item" onclick="clickCat(this)">🍎水果</div>
+  <div class="item" onclick="clickCat(this)">🥤饮料</div>
+  <div class="item" onclick="clickCat(this)">🍞零食</div>
+  <div class="item" onclick="clickCat(this)">🎁礼品</div>
+</div>
+
+<script>
+// 点击导航栏变色+弹窗提示
+function changeNavColor(){
+  const nav = document.getElementById('topNav');
+  nav.classList.toggle('active');
+  alert('你点击了顶部导航！欢迎来到我的商城');
+}
+
+// 点击分类高亮选中
+function clickCat(el){
+  // 清除所有选中
+  const allItem = document.querySelectorAll('.item');
+  allItem.forEach(item=>item.classList.remove('active'));
+  // 当前点击高亮
+  el.classList.add('active');
+}
+</script>
 
 </body>
 </html>
