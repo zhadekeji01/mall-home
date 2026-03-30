@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>完整版商城首页+底部导航</title>
+  <title>精致商城-真实图片促销版</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑",sans-serif;}
     body{background:#f5f5f5;padding:50px 0 60px 0;}
@@ -31,7 +31,9 @@
       background:linear-gradient(45deg,#ff6b6b,#ff8a80);
       border-radius:12px;display:flex;
       align-items:center;justify-content:center;color:#fff;font-size:16px;
+      overflow: hidden;
     }
+    .banner img{width:100%;height:100%;object-fit:cover;}
 
     /*分类菜单*/
     .menu{
@@ -56,26 +58,33 @@
       padding:0 15px;
     }
 
-    /*美化商品卡片*/
+    /*商品卡片美化*/
     .goods-card{
       background:#fff;border-radius:12px;overflow:hidden;
       box-shadow:0 3px 10px rgba(0,0,0,0.08);
     }
     .goods-img{
-      width:100%;height:140px;background:#f8f8f8;
-      display:flex;align-items:center;justify-content:center;color:#999;
-      font-size:14px;
+      width:100%;height:140px;
+      overflow:hidden;
+    }
+    .goods-img img{
+      width:100%;height:100%;object-fit:cover;
     }
     .goods-info{padding:10px;}
     .goods-name{font-size:14px;color:#333;margin-bottom:6px;}
     .goods-price{font-size:16px;color:red;font-weight:bold;}
+    .old-price{
+      font-size:12px;color:#999;
+      text-decoration:line-through;
+      margin-left:6px;
+    }
     .buy-btn{
       margin-top:8px;width:100%;height:30px;
       background:#ff4a4a;color:#fff;border:none;
       border-radius:15px;font-size:12px;
     }
 
-    /*底部固定导航*/
+    /*底部导航*/
     .footer-tab{
       position:fixed;bottom:0;left:0;width:100%;height:60px;
       background:#fff;display:flex;border-top:1px solid #eee;
@@ -98,7 +107,9 @@
   <input type="text" placeholder="🔍搜索生鲜/零食/水果">
 </div>
 
-<div class="banner">年货特惠 全场低至5折</div>
+<div class="banner">
+  <img src="https://picsum.photos/800/400" alt="活动轮播">
+</div>
 
 <div class="menu">
   <div class="item" onclick="clickCat(this)">🍎水果</div>
@@ -110,32 +121,34 @@
 <div class="goods-title">🔥热销商品</div>
 <div class="goods-wrap">
   <div class="goods-card">
-    <div class="goods-img">商品图片1</div>
+    <div class="goods-img">
+      <img src="https://picsum.photos/seed/apple/400/300" alt="苹果">
+    </div>
     <div class="goods-info">
       <div class="goods-name">新鲜进口苹果 5斤装</div>
-      <div class="goods-price">¥29.9</div>
+      <div>
+        <span class="goods-price">¥29.9</span>
+        <span class="old-price">¥59.9</span>
+      </div>
       <button class="buy-btn" onclick="alert('已加入购物车')">立即抢购</button>
     </div>
   </div>
+
   <div class="goods-card">
-    <div class="goods-img">商品图片2</div>
+    <div class="goods-img">
+      <img src="https://picsum.photos/seed/milk/400/300" alt="牛奶">
+    </div>
     <div class="goods-info">
       <div class="goods-name">网红牛奶酸奶整箱</div>
-      <div class="goods-price">¥49.9</div>
-      <button class="buy-btn" onclick="alert('已加入购物车')">立即抢购</button>
-    </div>
-  </div>
-  <div class="goods-card">
-    <div class="goods-img">商品图片3</div>
-    <div class="goods-info">
-      <div class="goods-name">新鲜进口苹果 吃剩的苹果核</div>
-      <div class="goods-price">¥19999.9</div>
+      <div>
+        <span class="goods-price">¥49.9</span>
+        <span class="old-price">¥79.9</span>
+      </div>
       <button class="buy-btn" onclick="alert('已加入购物车')">立即抢购</button>
     </div>
   </div>
 </div>
 
-<!-- 底部导航栏 -->
 <div class="footer-tab">
   <div class="tab-item active" onclick="clickTab(this)">
     <div>🏠</div>
@@ -156,27 +169,23 @@
 </div>
 
 <script>
-// 顶部导航点击变色
 function changeNavColor(){
   const nav = document.getElementById('topNav');
   nav.classList.toggle('active');
   alert('你点击了顶部导航！欢迎来到我的商城');
 }
 
-// 分类点击高亮
 function clickCat(el){
   const allItem = document.querySelectorAll('.item');
   allItem.forEach(item=>item.classList.remove('active'));
   el.classList.add('active');
 }
 
-// 底部导航点击高亮（修复新增）
 function clickTab(el){
   const allTab = document.querySelectorAll('.tab-item');
   allTab.forEach(tab=>tab.classList.remove('active'));
   el.classList.add('active');
 }
 </script>
-
 </body>
 </html>
