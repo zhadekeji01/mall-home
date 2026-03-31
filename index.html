@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>精致商城-真实图片促销版</title>
+  <title>商城-购物车交互版</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑",sans-serif;}
     body{background:#f5f5f5;padding:50px 0 60px 0;}
@@ -28,10 +28,7 @@
     /*轮播*/
     .banner{
       margin:0 15px 12px;height:170px;
-      background:linear-gradient(45deg,#ff6b6b,#ff8a80);
-      border-radius:12px;display:flex;
-      align-items:center;justify-content:center;color:#fff;font-size:16px;
-      overflow: hidden;
+      border-radius:12px;overflow:hidden;
     }
     .banner img{width:100%;height:100%;object-fit:cover;}
 
@@ -64,8 +61,7 @@
       box-shadow:0 3px 10px rgba(0,0,0,0.08);
     }
     .goods-img{
-      width:100%;height:140px;
-      overflow:hidden;
+      width:100%;height:140px;overflow:hidden;
     }
     .goods-img img{
       width:100%;height:100%;object-fit:cover;
@@ -81,8 +77,9 @@
     .buy-btn{
       margin-top:8px;width:100%;height:30px;
       background:#ff4a4a;color:#fff;border:none;
-      border-radius:15px;font-size:12px;
+      border-radius:15px;font-size:12px;cursor:pointer;
     }
+    .buy-btn:active{background:#e03e3e;}
 
     /*底部导航*/
     .footer-tab{
@@ -92,8 +89,21 @@
     }
     .tab-item{
       flex:1;text-align:center;padding-top:8px;color:#666;font-size:12px;
+      position:relative;cursor:pointer;
     }
     .tab-item.active{color:#ff4a4a;}
+    /*购物车角标*/
+    .cart-badge{
+  position:absolute;
+  top: 4px;
+  right: 50%;
+  transform: translateX(30%); /* 精准对齐图标右上角 */
+  background:red;color:#fff;
+  width:18px;height:18px;border-radius:50%;
+  font-size:11px;line-height:18px;text-align:center;
+  display:none;
+}
+.cart-badge.show{display:block;}
   </style>
 </head>
 <body>
@@ -108,7 +118,7 @@
 </div>
 
 <div class="banner">
-  <img src="https://picsum.photos/800/400" alt="活动轮播">
+  <img src="https://picsum.photos/800/400?random=1" alt="活动轮播">
 </div>
 
 <div class="menu">
@@ -130,7 +140,7 @@
         <span class="goods-price">¥29.9</span>
         <span class="old-price">¥59.9</span>
       </div>
-      <button class="buy-btn" onclick="alert('已加入购物车')">立即抢购</button>
+      <button class="buy-btn" onclick="addToCart()">立即抢购</button>
     </div>
   </div>
 
@@ -144,7 +154,7 @@
         <span class="goods-price">¥49.9</span>
         <span class="old-price">¥79.9</span>
       </div>
-      <button class="buy-btn" onclick="alert('已加入购物车')">立即抢购</button>
+      <button class="buy-btn" onclick="addToCart()">立即抢购</button>
     </div>
   </div>
 </div>
@@ -161,6 +171,7 @@
   <div class="tab-item" onclick="clickTab(this)">
     <div>🛒</div>
     <div>购物车</div>
+    <span class="cart-badge" id="cartBadge">0</span>
   </div>
   <div class="tab-item" onclick="clickTab(this)">
     <div>👤</div>
@@ -169,22 +180,48 @@
 </div>
 
 <script>
+// 初始化购物车数量
+let cartCount = parseInt(localStorage.getItem('cartCount')) || 0;
+updateCartBadge();
+
+// 顶部导航点击变色
 function changeNavColor(){
   const nav = document.getElementById('topNav');
   nav.classList.toggle('active');
   alert('你点击了顶部导航！欢迎来到我的商城');
 }
 
+// 分类点击高亮
 function clickCat(el){
   const allItem = document.querySelectorAll('.item');
   allItem.forEach(item=>item.classList.remove('active'));
   el.classList.add('active');
 }
 
+// 底部导航点击高亮
 function clickTab(el){
   const allTab = document.querySelectorAll('.tab-item');
   allTab.forEach(tab=>tab.classList.remove('active'));
   el.classList.add('active');
+}
+
+// 加入购物车
+function addToCart(){
+  cartCount++;
+  localStorage.setItem('cartCount', cartCount);
+  updateCartBadge();
+  alert('商品已加入购物车！当前购物车数量：' + cartCount);
+}
+
+// 更新购物车角标
+function updateCartBadge(){
+  const badge = document.getElementById('cartBadge');
+  if(cartCount > 0){
+    badge.textContent = cartCount;
+    badge.classList.add('show');
+  } else {
+    badge.classList.remove('show');
+  }
 }
 </script>
 </body>
