@@ -6,20 +6,47 @@
 <title>购物车</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-body{background:#f5f5f5;padding-top:50px;padding-bottom:70px;font-family:"微软雅黑";}
+body{background:#f5f5f5;padding-top:50px;padding-bottom:120px;font-family:"微软雅黑";}
+
+/*顶部导航*/
 .head{
 position:fixed;top:0;left:0;width:100%;height:50px;
-background:#ff4a4a;color:#fff;text-align:center;
-line-height:50px;font-size:18px;
+background:#ff4a4a;color:#fff;text-align:center;line-height:50px;font-size:18px;
 }
-.back{position:absolute;left:15px;top:0;line-height:50px;cursor:pointer;}
+.back{position:absolute;left:15px;top:0;line-height:50px;cursor:pointer;font-size:20px;}
+
+/*空购物车*/
 .empty{text-align:center;margin-top:100px;color:#999;font-size:16px;}
+
+/*购物车商品列表*/
+.cart-item{
+background:#fff;margin:10px 15px;border-radius:10px;
+display:flex;padding:12px;align-items:center;
+}
+.cart-img{width:70px;height:70px;border-radius:8px;object-fit:cover;}
+.cart-info{flex:1;margin-left:12px;}
+.cart-name{font-size:15px;color:#333;margin-bottom:4px;}
+.cart-price{font-size:16px;color:red;font-weight:bold;}
+
+/*数量加减*/
+.num-box{display:flex;align-items:center;gap:8px;margin-top:6px;}
+.num-btn{width:24px;height:24px;border:1px solid #ddd;background:#fff;border-radius:4px;cursor:pointer;}
+.num{font-size:14px;width:20px;text-align:center;}
+
+/*底部合计*/
 .total{
 position:fixed;bottom:60px;left:0;width:100%;
-background:#fff;padding:12px 15px;display:flex;
-justify-content:space-between;border-top:1px solid #eee;
+background:#fff;padding:12px 15px;
+display:flex;justify-content:space-between;align-items:center;
+border-top:1px solid #eee;
 }
-.btn-pay{background:#ff4a4a;color:#fff;border:none;padding:6px 16px;border-radius:15px;}
+.total-price{color:red;font-size:16px;font-weight:bold;}
+.btn-pay{
+background:#ff4a4a;color:#fff;border:none;
+padding:8px 20px;border-radius:20px;font-size:14px;cursor:pointer;
+}
+
+/*底部导航*/
 .footer-tab{
 position:fixed;bottom:0;left:0;width:100%;height:60px;
 background:#fff;display:flex;border-top:1px solid #eee;
@@ -34,10 +61,10 @@ background:#fff;display:flex;border-top:1px solid #eee;
 <span class="back" onclick="goHome()">←</span>购物车
 </div>
 
-<div id="content" class="empty">购物车暂无商品</div>
+<div id="cartList"></div>
 
 <div class="total">
-<div>合计：<span style="color:red;font-weight:bold">¥0.00</span></div>
+合计：<span class="total-price" id="totalPrice">¥0.00</span>
 <button class="btn-pay">去结算</button>
 </div>
 
@@ -49,19 +76,77 @@ background:#fff;display:flex;border-top:1px solid #eee;
 </div>
 
 <script>
-let num = parseInt(localStorage.getItem('cartCount')) || 0;
-let content = document.getElementById('content');
+// 全局商品数据（和首页完全统一）
+const goodsList = [
+  { id: 0, name: "新鲜进口苹果 5斤装", price: 29.9, img: "https://picsum.photos/seed/apple/400/300" },
+  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, img: "https://picsum.photos/seed/milk/400/300" }
+];
 
-if(num>0){
-content.innerHTML = `<div style="padding:15px;background:#fff;margin:10px;border-radius:10px;">已选购商品共 ${num} 件</div>`;
-document.querySelector('.total span').innerText = "¥"+(num*29.9).toFixed(2);
-}else{
-content.className="empty";
-content.innerText="购物车暂无商品";
+// 从本地存储读取购物车数据（和首页完全同步）
+let cartList = JSON.parse(localStorage.getItem('cartList')) || [
+  { id: 0, num: 0 },
+  { id: 1, num: 0 }
+];
+
+// 渲染购物车
+function renderCart() {
+  const listEl = document.getElementById("cartList");
+  const priceEl = document.getElementById("totalPrice");
+  let total = 0;
+  let hasGoods = false;
+  let html = "";
+
+  // 遍历购物车数据，只渲染数量>0的商品
+  cartList.forEach((item, index) => {
+    if (item.num <= 0) return;
+    hasGoods = true;
+    const goods = goodsList[index];
+    const itemTotal = goods.price * item.num;
+    total += itemTotal;
+
+    html += `
+    <div class="cart-item">
+      <img src="${goods.img}" class="cart-img">
+      <div class="cart-info">
+        <div class="cart-name">${goods.name}</div>
+        <div class="cart-price">¥${goods.price.toFixed(2)}</div>
+        <div class="num-box">
+          <button class="num-btn" onclick="changeNum(${index},-1)">-</button>
+          <span class="num">${item.num}</span>
+          <button class="num-btn" onclick="changeNum(${index},1)">+</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  // 空购物车处理
+  if (!hasGoods) {
+    listEl.innerHTML = `<div class="empty">购物车暂无商品</div>`;
+    priceEl.innerText = "¥0.00";
+    return;
+  }
+
+  // 渲染商品列表和总价
+  listEl.innerHTML = html;
+  priceEl.innerText = "¥" + total.toFixed(2);
 }
 
-//返回首页
-function goHome(){window.location.href="index.html";}
+// 数量增减（同步本地存储）
+function changeNum(index, n) {
+  cartList[index].num += n;
+  // 数量不能小于0
+  if (cartList[index].num < 0) cartList[index].num = 0;
+  // 保存到本地存储
+  localStorage.setItem('cartList', JSON.stringify(cartList));
+  // 重新渲染
+  renderCart();
+}
+
+// 返回首页
+function goHome() { location.href = "index.html"; }
+
+// 初始化渲染
+renderCart();
 </script>
 </body>
 </html>
