@@ -14,6 +14,7 @@ position:fixed;top:0;left:0;width:100%;height:50px;
 background:#ff4a4a;color:#fff;text-align:center;line-height:50px;font-size:18px;
 }
 .back{position:absolute;left:15px;top:0;line-height:50px;cursor:pointer;font-size:20px;}
+.clear-btn{position:absolute;right:15px;font-size:14px;cursor:pointer;}
 
 /*空购物车*/
 .empty{text-align:center;margin-top:100px;color:#999;font-size:16px;}
@@ -59,13 +60,14 @@ background:#fff;display:flex;border-top:1px solid #eee;
 
 <div class="head">
 <span class="back" onclick="goHome()">←</span>购物车
+<span class="clear-btn" onclick="clearCart()">清空购物车</span>
 </div>
 
 <div id="cartList"></div>
 
 <div class="total">
 合计：<span class="total-price" id="totalPrice">¥0.00</span>
-<button class="btn-pay">去结算</button>
+<button class="btn-pay" onclick="checkout()">去结算</button>
 </div>
 
 <div class="footer-tab">
@@ -76,13 +78,13 @@ background:#fff;display:flex;border-top:1px solid #eee;
 </div>
 
 <script>
-// 全局商品数据（和首页完全统一）
+// 全局商品数据（和首页/详情统一）
 const goodsList = [
   { id: 0, name: "新鲜进口苹果 5斤装", price: 29.9, img: "https://picsum.photos/seed/apple/400/300" },
   { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, img: "https://picsum.photos/seed/milk/400/300" }
 ];
 
-// 从本地存储读取购物车数据（和首页完全同步）
+// 读取购物车
 let cartList = JSON.parse(localStorage.getItem('cartList')) || [
   { id: 0, num: 0 },
   { id: 1, num: 0 }
@@ -96,7 +98,6 @@ function renderCart() {
   let hasGoods = false;
   let html = "";
 
-  // 遍历购物车数据，只渲染数量>0的商品
   cartList.forEach((item, index) => {
     if (item.num <= 0) return;
     hasGoods = true;
@@ -119,27 +120,42 @@ function renderCart() {
     </div>`;
   });
 
-  // 空购物车处理
   if (!hasGoods) {
     listEl.innerHTML = `<div class="empty">购物车暂无商品</div>`;
     priceEl.innerText = "¥0.00";
     return;
   }
 
-  // 渲染商品列表和总价
   listEl.innerHTML = html;
   priceEl.innerText = "¥" + total.toFixed(2);
 }
 
-// 数量增减（同步本地存储）
+// 数量修改
 function changeNum(index, n) {
   cartList[index].num += n;
-  // 数量不能小于0
   if (cartList[index].num < 0) cartList[index].num = 0;
-  // 保存到本地存储
   localStorage.setItem('cartList', JSON.stringify(cartList));
-  // 重新渲染
   renderCart();
+}
+
+// 🔴 清空购物车
+function clearCart(){
+  if(confirm("确定要清空全部商品吗？")){
+    cartList = [{id:0,num:0},{id:1,num:0}];
+    localStorage.setItem('cartList',JSON.stringify(cartList));
+    renderCart();
+    alert("购物车已清空！");
+  }
+}
+
+// 🟢 结算弹窗
+function checkout(){
+  let totalCount = cartList.reduce((sum,item)=>sum+item.num,0);
+  if(totalCount === 0){
+    alert("购物车空空如也，快去选购商品吧！");
+    return;
+  }
+  alert("订单提交成功！支付即将跳转，感谢购买❤️");
 }
 
 // 返回首页
