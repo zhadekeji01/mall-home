@@ -35,7 +35,7 @@ background:#fff;margin:0 15px;border-radius:12px;
 padding:15px 0;display:flex;justify-content:space-around;
 box-shadow:0 2px 6px rgba(0,0,0,0.06);
 }
-.item{text-align:center;font-size:12px;color:#333;}
+.item{text-align:center;font-size:12px;color:#333;cursor:pointer;}
 .item.active{color:red;font-weight:bold;}
 
 /*商品标题*/
@@ -44,8 +44,11 @@ box-shadow:0 2px 6px rgba(0,0,0,0.06);
 /*商品网格*/
 .goods-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 15px;}
 
-/*商品卡片*/
-.goods-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,0.08);}
+/*商品卡片：加光标手势，可点击跳转*/
+.goods-card{
+background:#fff;border-radius:12px;overflow:hidden;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);cursor:pointer;
+}
 .goods-img{width:100%;height:140px;overflow:hidden;}
 .goods-img img{width:100%;height:100%;object-fit:cover;}
 .goods-info{padding:10px;}
@@ -70,7 +73,7 @@ position:relative;cursor:pointer;
 }
 .tab-item.active{color:#ff4a4a;}
 
-/* 修复后的购物车角标样式 */
+/* 购物车角标 */
 .cart-badge{
   position:absolute;
   top: 4px;
@@ -108,23 +111,23 @@ position:relative;cursor:pointer;
 
 <div class="goods-title">🔥热销商品</div>
 <div class="goods-wrap">
-  <!-- 苹果商品，绑定id=0 -->
-  <div class="goods-card">
+  <!-- 苹果卡片：点击跳转详情?id=0 -->
+  <div class="goods-card" onclick="goDetail(0)">
     <div class="goods-img"><img src="https://picsum.photos/seed/apple/400/300"></div>
     <div class="goods-info">
       <div class="goods-name">新鲜进口苹果 5斤装</div>
       <div><span class="goods-price">¥29.9</span><span class="old-price">¥59.9</span></div>
-      <button class="buy-btn" onclick="addToCart(0)">立即抢购</button>
+      <button class="buy-btn" onclick="event.stopPropagation();addToCart(0)">立即抢购</button>
     </div>
   </div>
 
-  <!-- 牛奶商品，绑定id=1 -->
-  <div class="goods-card">
+  <!-- 牛奶卡片：点击跳转详情?id=1 -->
+  <div class="goods-card" onclick="goDetail(1)">
     <div class="goods-img"><img src="https://picsum.photos/seed/milk/400/300"></div>
     <div class="goods-info">
       <div class="goods-name">网红牛奶酸奶整箱</div>
       <div><span class="goods-price">¥49.9</span><span class="old-price">¥79.9</span></div>
-      <button class="buy-btn" onclick="addToCart(1)">立即抢购</button>
+      <button class="buy-btn" onclick="event.stopPropagation();addToCart(1)">立即抢购</button>
     </div>
   </div>
 </div>
@@ -147,57 +150,48 @@ position:relative;cursor:pointer;
 </div>
 
 <script>
-// 全局商品数据（和购物车页面完全统一）
+// 全局商品数据
 const goodsList = [
-  { id: 0, name: "新鲜进口苹果 5斤装", price: 29.9, img: "https://picsum.photos/seed/apple/400/300" },
-  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, img: "https://picsum.photos/seed/milk/400/300" }
+  { id: 0, name: "新鲜进口苹果 5斤装", price: 29.9, img: "https://picsum.photos/seed/apple/400/300", desc:"精选红富士，脆甜多汁，新鲜现摘包邮" },
+  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, img: "https://picsum.photos/seed/milk/400/300", desc:"营养早餐搭档，常温保存，全家都爱喝" }
 ];
 
-// 从本地存储读取购物车数据，初始化
+// 读取购物车
 let cartList = JSON.parse(localStorage.getItem('cartList')) || [
   { id: 0, num: 0 },
   { id: 1, num: 0 }
 ];
 
-// 初始化角标
 updateCartBadge();
 
-// 顶部导航点击
 function changeNavColor(){
   const nav = document.getElementById('topNav');
   nav.classList.toggle('active');
   alert('欢迎来到我的商城');
 }
 
-// 分类点击高亮
 function clickCat(el){
   document.querySelectorAll('.item').forEach(x=>x.classList.remove('active'));
   el.classList.add('active');
 }
 
-// 底部Tab点击高亮
 function clickTab(el){
   document.querySelectorAll('.tab-item').forEach(x=>x.classList.remove('active'));
   el.classList.add('active');
 }
 
-// 加入购物车（核心：给对应商品数量+1，同步本地存储）
+// 加入购物车
 function addToCart(goodsId){
-  // 找到对应商品，数量+1
   cartList[goodsId].num += 1;
-  // 保存到本地存储
   localStorage.setItem('cartList', JSON.stringify(cartList));
-  // 更新角标
   updateCartBadge();
-  // 弹窗提示
   const goods = goodsList[goodsId];
   alert(`${goods.name} 已加入购物车！`);
 }
 
-// 更新购物车角标（计算总数量）
+// 更新角标
 function updateCartBadge(){
   const badge = document.getElementById('cartBadge');
-  // 计算所有商品的总数量
   const total = cartList.reduce((sum, item) => sum + item.num, 0);
   if(total > 0){
     badge.innerText = total;
@@ -207,7 +201,12 @@ function updateCartBadge(){
   }
 }
 
-// 跳转到购物车
+// 跳转详情页
+function goDetail(id){
+  location.href = "detail.html?id="+id;
+}
+
+// 跳转购物车
 function goCart(){
   window.location.href="cart.html";
 }
