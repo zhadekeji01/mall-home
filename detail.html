@@ -60,14 +60,24 @@ border:none;border-radius:20px;font-size:15px;cursor:pointer;
 </div>
 
 <script>
+// 1. 商品数据（和首页完全一致）
 const goodsList = [
   { id: 0, name: "新鲜进口苹果 5斤装", price: 29.9, old:59.9, img: "https://picsum.photos/seed/apple/400/300", desc:"精选红富士，脆甜多汁，新鲜现摘包邮，全家放心吃" },
-  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, old:79.9, img: "https://picsum.photos/seed/milk/400/300", desc:"营养早餐搭档，口感醇厚顺滑，常温储存，老少皆宜" }
+  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, old:79.9, img: "https://picsum.photos/seed/milk/400/300", desc:"营养早餐搭档，口感醇厚顺滑，常温储存，老少皆宜" },
+  { id: 2, name: "精品香蕉 一把装", price: 19.9, old:39.9, img: "https://picsum.photos/seed/banana/400/300", desc:"香甜软糯，新鲜直达" },
+  { id: 3, name: "进口橙子 10斤装", price: 39.9, old:69.9, img: "https://picsum.photos/seed/orange/400/300", desc:"富含VC，水润爆汁" }
 ];
+
+// 2. 获取商品ID
 let id = new URLSearchParams(location.search).get('id');
 id = parseInt(id);
-let cartList = JSON.parse(localStorage.getItem('cartList')) || [{id:0,num:0},{id:1,num:0}];
 
+// 3. 购物车数据（和首页完全一致）
+let cartList = JSON.parse(localStorage.getItem('cartList')) || [
+  {id:0,num:0},{id:1,num:0},{id:2,num:0},{id:3,num:0}
+];
+
+// 4. 渲染详情
 let g = goodsList[id];
 document.getElementById('dImg').src = g.img;
 document.getElementById('dPrice').innerText = "¥"+g.price.toFixed(2);
@@ -75,6 +85,7 @@ document.getElementById('dOld').innerText = "¥"+g.old.toFixed(2);
 document.getElementById('dName').innerText = g.name;
 document.getElementById('dDesc').innerText = g.desc;
 
+// 5. 更新角标
 function refreshBadge(){
   let total = cartList.reduce((sum,item)=>sum+item.num,0);
   let b = document.getElementById('detailBadge');
@@ -82,12 +93,15 @@ function refreshBadge(){
 }
 refreshBadge();
 
+// 6. 详情页加购
 function detailAddCart(){
   cartList[id].num++;
   localStorage.setItem('cartList',JSON.stringify(cartList));
   refreshBadge();
-  alert("商品已加入购物车！");
+  alert(`${g.name} 已加入购物车！`);
 }
+
+// 7. 跳转购物车
 function goCartPage(){location.href="cart.html";}
 </script>
 </body>

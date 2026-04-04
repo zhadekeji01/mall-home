@@ -65,12 +65,20 @@ background:#fff;display:flex;border-top:1px solid #eee;
 </div>
 
 <script>
+// 1. 商品数据（和首页、详情页完全一致）
 const goodsList = [
   { id: 0, name: "新鲜进口苹果 5斤装", price: 29.9, img: "https://picsum.photos/seed/apple/400/300" },
-  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, img: "https://picsum.photos/seed/milk/400/300" }
+  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, img: "https://picsum.photos/seed/milk/400/300" },
+  { id: 2, name: "精品香蕉 一把装", price: 19.9, img: "https://picsum.photos/seed/banana/400/300" },
+  { id: 3, name: "进口橙子 10斤装", price: 39.9, img: "https://picsum.photos/seed/orange/400/300" }
 ];
-let cartList = JSON.parse(localStorage.getItem('cartList')) || [{id:0,num:0},{id:1,num:0}];
 
+// 2. 购物车数据
+let cartList = JSON.parse(localStorage.getItem('cartList')) || [
+  {id:0,num:0},{id:1,num:0},{id:2,num:0},{id:3,num:0}
+];
+
+// 3. 渲染购物车
 function renderCart(){
   const listEl = document.getElementById("cartList");
   const priceEl = document.getElementById("totalPrice");
@@ -96,22 +104,32 @@ function renderCart(){
   if(!hasGoods){listEl.innerHTML='<div class="empty">购物车暂无商品</div>';priceEl.innerText="¥0.00";return;}
   listEl.innerHTML=html;priceEl.innerText="¥"+total.toFixed(2);
 }
+
+// 4. 数量修改
 function changeNum(index,n){
   cartList[index].num +=n;
   if(cartList[index].num<0)cartList[index].num=0;
   localStorage.setItem('cartList',JSON.stringify(cartList));renderCart();
 }
+
+// 5. 清空购物车
 function clearCart(){
   if(confirm("确定清空全部商品吗？")){
-    cartList=[{id:0,num:0},{id:1,num:0}];
+    cartList=[{id:0,num:0},{id:1,num:0},{id:2,num:0},{id:3,num:0}];
     localStorage.setItem('cartList',JSON.stringify(cartList));renderCart();alert("已清空！");
   }
 }
+
+// 6. 结算
 function checkout(){
   let total = cartList.reduce((s,i)=>s+i.num,0);
   total?alert("订单提交成功，感谢购买！"):alert("购物车空空如也~");
 }
+
+// 7. 返回首页
 function goHome(){location.href="index.html";}
+
+// 初始化
 renderCart();
 </script>
 </body>
