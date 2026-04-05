@@ -8,7 +8,6 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑";}
 body{background:#f5f5f5;padding-bottom:60px;}
 
-/* 顶部导航 */
 .top-bar{
   height:50px;
   background:#ff4a4a;
@@ -23,7 +22,6 @@ body{background:#f5f5f5;padding-bottom:60px;}
   z-index:10;
 }
 
-/* 用户卡片 */
 .user-card{
   margin-top:50px;
   background:#fff;
@@ -51,7 +49,6 @@ body{background:#f5f5f5;padding-bottom:60px;}
   border:none;border-radius:12px;font-size:14px;cursor:pointer;
 }
 
-/* 订单区域 */
 .order-box{
   background:#fff;
   padding:15px;
@@ -72,7 +69,6 @@ body{background:#f5f5f5;padding-bottom:60px;}
   color:#333;
 }
 
-/* 菜单列表 */
 .menu-list{
   background:#fff;
   margin-top:10px;
@@ -85,7 +81,6 @@ body{background:#f5f5f5;padding-bottom:60px;}
 }
 .menu-item:active{background:#f5f5f5;}
 
-/* 底部导航 */
 .footer-tab{
   position:fixed;
   bottom:0;
@@ -140,35 +135,32 @@ body{background:#f5f5f5;padding-bottom:60px;}
 </div>
 
 <div class="footer-tab">
-  <div class="tab-item" onclick="go('index')">🏠<br>首页</div>
-  <div class="tab-item" onclick="go('cate')">📋<br>分类</div>
-  <div class="tab-item" onclick="go('cart')">🛒<br>购物车</div>
-  <div class="tab-item active" onclick="go('mine')">👤<br>我的</div>
+  <div class="tab-item" onclick="location.href='index.html'">🏠<br>首页</div>
+  <div class="tab-item" onclick="alert('分类开发中')">📋<br>分类</div>
+  <div class="tab-item" onclick="location.href='cart.html'">🛒<br>购物车</div>
+  <div class="tab-item active" onclick="location.href='mine.html'">👤<br>我的</div>
 </div>
 
 <script>
-// 页面加载时读取登录状态
+// 🔧 核心修复：同时读取localStorage（记住我）和sessionStorage（临时登录）
 window.onload = function() {
-  const user = JSON.parse(localStorage.getItem("loginUser"));
-  if (user) {
-    // 显示用户名
-    document.getElementById("username").innerText = user.username;
-    // 头像显示用户名首字
-    document.getElementById("avatar").innerText = user.username.charAt(0).toUpperCase();
-  } else {
-    // 未登录，跳登录页
-    alert("请先登录！");
-    location.href = "login.html";
-  }
-};
+  // 优先读localStorage（记住我），再读sessionStorage（临时登录）
+  const localUser = localStorage.getItem("loginUser");
+  const sessionUser = sessionStorage.getItem("loginUser");
+  const userStr = localUser || sessionUser;
 
-// 页面跳转
-function go(page){
-  if(page==='index') location.href='index.html'
-  if(page==='cate') alert('分类页面开发中')
-  if(page==='cart') location.href='cart.html'
-  if(page==='mine') location.href='mine.html'
-}
+  if (!userStr) {
+    alert("请先登录");
+    location.href = "login.html";
+    return;
+  }
+
+  const user = JSON.parse(userStr);
+  // 显示用户名
+  document.getElementById("username").innerText = user.username;
+  // 头像显示首字母
+  document.getElementById("avatar").innerText = user.username.charAt(0).toUpperCase();
+};
 
 // 清空购物车缓存
 function clearLocal(){
@@ -182,6 +174,8 @@ function clearLocal(){
 function logout() {
   if(confirm("确定要退出登录吗？")){
     localStorage.removeItem("loginUser");
+    sessionStorage.removeItem("loginUser");
+    sessionStorage.removeItem("isLogin");
     alert("已退出登录");
     location.href = "login.html";
   }

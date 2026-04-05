@@ -7,43 +7,22 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑";}
 body{background:#f5f5f5;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;}
-
-.logo{
-  width:80px;height:80px;background:#ff4a4a;border-radius:50%;
-  color:#fff;display:flex;align-items:center;justify-content:center;
-  font-size:32px;margin-bottom:20px;
-}
-.login-box{
-  width:90%;max-width:400px;background:#fff;padding:30px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.1);
-}
+.logo{width:80px;height:80px;background:#ff4a4a;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px;}
+.login-box{width:90%;max-width:400px;background:#fff;padding:30px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.1);}
 .login-box h2{text-align:center;margin-bottom:30px;color:#333;}
-
 .form-item{margin-bottom:20px;}
 .form-item label{display:block;font-size:14px;color:#666;margin-bottom:8px;}
-.form-item input{
-  width:100%;height:44px;border:1px solid #ddd;border-radius:8px;
-  padding:0 12px;font-size:16px;outline:none;
-}
+.form-item input{width:100%;height:44px;border:1px solid #ddd;border-radius:8px;padding:0 12px;font-size:16px;outline:none;}
 .form-item input:focus{border-color:#ff4a4a;}
-
-.remember{
-  display:flex;align-items:center;gap:8px;margin-bottom:25px;
-  font-size:14px;color:#666;
-}
+.remember{display:flex;align-items:center;gap:8px;margin-bottom:25px;font-size:14px;color:#666;}
 .remember input{width:auto;height:auto;}
-
-.btn-login{
-  width:100%;height:44px;background:#ff4a4a;color:#fff;border:none;
-  border-radius:22px;font-size:16px;cursor:pointer;
-}
+.btn-login{width:100%;height:44px;background:#ff4a4a;color:#fff;border:none;border-radius:22px;font-size:16px;cursor:pointer;}
 .btn-login:active{background:#e03e3e;}
-
 .tip{text-align:center;margin-top:20px;font-size:14px;color:#999;}
 .tip span{color:#ff4a4a;cursor:pointer;}
 </style>
 </head>
 <body>
-
 <div class="logo">🛒</div>
 <div class="login-box">
   <h2>用户登录</h2>
@@ -64,42 +43,38 @@ body{background:#f5f5f5;display:flex;flex-direction:column;align-items:center;ju
 </div>
 
 <script>
-// 测试账号：admin / 123456
 const TEST_USER = { username: "admin", password: "123456" };
 
-// 页面加载时检查是否记住登录
-window.onload = function() {
+window.onload = function(){
   const savedUser = localStorage.getItem("loginUser");
-  if (savedUser) {
+  if(savedUser){
     const user = JSON.parse(savedUser);
-    // 自动填充用户名
     document.getElementById("username").value = user.username;
-    // 自动登录，直接跳首页
     doLoginAuto(user.username);
   }
 };
 
-// 手动登录
-function doLogin() {
+function doLogin(){
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
   const remember = document.getElementById("remember").checked;
 
-  // 校验输入
   if (!username || !password) {
     alert("请输入用户名和密码！");
     return;
   }
 
-  // 验证账号密码
   if (username === TEST_USER.username && password === TEST_USER.password) {
-    // 记住我逻辑
+    // 🔧 核心修复：无论是否勾选，都保存用户名到对应存储
     if (remember) {
       localStorage.setItem("loginUser", JSON.stringify({ username }));
+      sessionStorage.removeItem("loginUser");
     } else {
+      // 不勾选：保存到sessionStorage，临时登录
+      sessionStorage.setItem("loginUser", JSON.stringify({ username }));
       localStorage.removeItem("loginUser");
     }
-    // 登录成功，跳首页
+    sessionStorage.setItem("isLogin", "true");
     alert("登录成功！");
     location.href = "index.html";
   } else {
@@ -107,12 +82,10 @@ function doLogin() {
   }
 }
 
-// 自动登录
-function doLoginAuto(username) {
-  // 直接跳首页，无需验证
+function doLoginAuto(username){
+  sessionStorage.setItem("isLogin", "true");
   location.href = "index.html";
 }
 </script>
-
 </body>
 </html>

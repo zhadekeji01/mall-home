@@ -6,13 +6,12 @@
 <title>商品详情</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:"微软雅黑";}
-/* 🔧 核心修复：给body留足底部空间，避免按钮被遮挡 */
-body{background:#f5f5f5;padding-bottom:140px;padding-top:50px;}
+body{background:#f5f5f5;padding-bottom:120px;padding-top:50px;}
 
 .top-bar{
 position:fixed;top:0;left:0;width:100%;height:50px;
 background:#ff4a4a;color:#fff;line-height:50px;
-text-align:center;font-size:18px;z-index:99;
+text-align:center;font-size:18px;z-index:999;
 }
 .back{position:absolute;left:15px;font-size:22px;cursor:pointer;}
 
@@ -23,12 +22,12 @@ text-align:center;font-size:18px;z-index:99;
 .d-name{font-size:16px;color:#333;margin:10px 0;}
 .d-desc{font-size:14px;color:#666;line-height:1.6;}
 
+/* 加购栏（固定在导航栏上方，永不遮挡） */
 .fixed-buy{
-position:fixed;bottom:60px; /* 🔧 核心修复：固定在导航栏上方，不被遮挡 */
-left:0;width:100%;height:60px;
+position:fixed;bottom:60px;left:0;width:100%;height:60px;
 background:#fff;display:flex;align-items:center;padding:0 15px;
 border-top:1px solid #eee;gap:15px;
-z-index:98; /* 层级高于页面内容，低于顶部导航 */
+z-index:998;
 }
 .cart-icon{font-size:24px;cursor:pointer;position:relative;}
 .badge{
@@ -42,11 +41,11 @@ flex:1;height:40px;background:#ff4a4a;color:#fff;
 border:none;border-radius:20px;font-size:15px;cursor:pointer;
 }
 
-/* 底部导航栏样式 */
+/* 底部导航 */
 .footer-tab{
 position:fixed;bottom:0;left:0;width:100%;height:60px;
 background:#fff;display:flex;border-top:1px solid #eee;
-z-index:99;
+z-index:999;
 }
 .tab-item{
 flex:1;text-align:center;padding-top:8px;color:#666;font-size:12px;
@@ -56,45 +55,67 @@ cursor:pointer;
 </style>
 </head>
 <body>
+
 <div class="top-bar">
   <span class="back" onclick="history.back()">←</span>商品详情
 </div>
 
 <img id="dImg" class="detail-img" src="" alt="">
+
 <div class="info">
-  <div><span class="d-price" id="dPrice">¥0.00</span><span class="d-old" id="dOld">¥0.00</span></div>
+  <div>
+    <span class="d-price" id="dPrice">¥0.00</span>
+    <span class="d-old" id="dOld">¥0.00</span>
+  </div>
   <div class="d-name" id="dName"></div>
   <div class="d-desc" id="dDesc"></div>
 </div>
 
 <div class="fixed-buy">
   <div class="cart-icon" onclick="goCartPage()">
-    🛒<span class="badge" id="detailBadge">0</span>
+    🛒
+    <span class="badge" id="detailBadge">0</span>
   </div>
   <button class="add-btn" onclick="detailAddCart()">加入购物车</button>
 </div>
 
-<!-- 底部导航栏 -->
 <div class="footer-tab">
   <div class="tab-item" onclick="location.href='index.html'">🏠<br>首页</div>
-  <div class="tab-item" onclick="alert('分类页面开发中')">📋<br>分类</div>
+  <div class="tab-item" onclick="alert('分类开发中')">📋<br>分类</div>
   <div class="tab-item" onclick="location.href='cart.html'">🛒<br>购物车</div>
   <div class="tab-item" onclick="location.href='mine.html'">👤<br>我的</div>
 </div>
 
 <script>
+// 登录拦截
+const localUser = localStorage.getItem('loginUser');
+const isLogin = sessionStorage.getItem('isLogin');
+if(!localUser && !isLogin){
+  alert('请先登录');
+  location.href='login.html';
+}
+
+// 统一商品数据（和首页完全一致）
 const goodsList = [
-  { id: 0, name: "新鲜进口苹果 5斤装", price: 29.9, old:59.9, img: "https://picsum.photos/seed/apple/400/300", desc:"精选红富士，脆甜多汁，新鲜现摘包邮，全家放心吃" },
-  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, old:79.9, img: "https://picsum.photos/seed/milk/400/300", desc:"营养早餐搭档，口感醇厚顺滑，常温储存，老少皆宜" },
-  { id: 2, name: "精品香蕉 一把装", price: 19.9, old:39.9, img: "https://picsum.photos/seed/banana/400/300", desc:"香甜软糯，新鲜直达" },
-  { id: 3, name: "进口橙子 10斤装", price: 39.9, old:69.9, img: "https://picsum.photos/seed/orange/400/300", desc:"富含VC，水润爆汁" }
-];
-let id = new URLSearchParams(location.search).get('id');
-id = parseInt(id);
-let cartList = JSON.parse(localStorage.getItem('cartList')) || [
-  {id:0,num:0},{id:1,num:0},{id:2,num:0},{id:3,num:0}
+  { id: 0, name: "新鲜进口苹果 5斤装", price: 29.9, old:59.9, img: "./images/apple.jpg", desc:"精选红富士，脆甜多汁，新鲜现摘包邮，全家放心吃" },
+  { id: 1, name: "网红牛奶酸奶整箱", price: 49.9, old:79.9, img: "./images/milk.jpg", desc:"营养早餐搭档，口感醇厚顺滑，常温储存，老少皆宜" },
+  { id: 2, name: "精品香蕉 一把装", price: 19.9, old:39.9, img: "./images/banana.jpg", desc:"香甜软糯，新鲜直达" },
+  { id: 3, name: "进口橙子 10斤装", price: 39.9, old:69.9, img: "./images/orange.jpg", desc:"富含VC，水润爆汁" }
 ];
 
+// 获取商品ID
+let id = new URLSearchParams(location.search).get('id');
+id = parseInt(id);
+
+// 读取购物车
+let cartList = JSON.parse(localStorage.getItem('cartList')) || [
+  { id: 0, num: 0 },
+  { id: 1, num: 0 },
+  { id: 2, num: 0 },
+  { id: 3, num: 0 }
+];
+
+// 渲染详情
 let g = goodsList[id];
 document.getElementById('dImg').src = g.img;
 document.getElementById('dPrice').innerText = "¥"+g.price.toFixed(2);
@@ -102,20 +123,27 @@ document.getElementById('dOld').innerText = "¥"+g.old.toFixed(2);
 document.getElementById('dName').innerText = g.name;
 document.getElementById('dDesc').innerText = g.desc;
 
+// 更新角标
 function refreshBadge(){
   let total = cartList.reduce((sum,item)=>sum+item.num,0);
   let b = document.getElementById('detailBadge');
-  total>0?(b.innerText=total,b.classList.add('show')):b.classList.remove('show');
+  if(total>0){b.innerText=total;b.classList.add('show');}
+  else{b.classList.remove('show');}
 }
 refreshBadge();
 
+// 加入购物车
 function detailAddCart(){
   cartList[id].num++;
   localStorage.setItem('cartList',JSON.stringify(cartList));
   refreshBadge();
   alert(`${g.name} 已加入购物车！`);
 }
-function goCartPage(){location.href="cart.html";}
+
+// 跳转购物车
+function goCartPage(){
+  location.href="cart.html";
+}
 </script>
 </body>
 </html>
