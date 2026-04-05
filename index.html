@@ -120,6 +120,18 @@ font-size:11px;line-height:18px;text-align:center;display:none;
 </div>
 
 <script>
+// 页面加载时检查登录状态
+window.onload = function() {
+  const user = localStorage.getItem("loginUser");
+  if (!user) {
+    // 未登录，跳登录页
+    location.href = "login.html";
+    return;
+  }
+  // 已登录，正常渲染页面
+  renderGoods();
+  updateCartBadge();
+};  
 // 1. 统一商品数据（4个商品，和购物车、详情页完全对齐）
 const goodsData = [
   {
@@ -231,9 +243,7 @@ function changeNavColor(){
   nav.classList.toggle('active');
 }
 
-// 初始化
-renderGoods();
-updateCartBadge();
+
 </script>
 </body>
 </html>
